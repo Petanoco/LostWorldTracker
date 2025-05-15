@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*'  # v1.0.0 のようなタグでトリガーされます
+      - 'v*'  # 例: v1.0.0
 
 jobs:
   build:
@@ -18,17 +18,20 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'  # 必要に応じて変更
+          dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore LostWorldTracker.sln
+        run: dotnet restore src/LostWorldTracker.sln
 
-      - name: Build project
-        run: dotnet publish LostWorldTracker/LostWorldTracker.csproj -c Release -r win-x64 -p:PublishSingleFile=true --output out
+      - name: Publish application
+        run: dotnet publish src/LostWorldTracker/LostWorldTracker.csproj -c Release -o out
 
-      - name: Upload release binary
+      - name: ZIP outputs
+        run: Compress-Archive -Path out\* -DestinationPath LostWorldTracker.zip
+
+      - name: Release ZIP
         uses: softprops/action-gh-release@v2
         with:
-          files: out/LostWorldTracker.exe
+          files: LostWorldTracker.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
