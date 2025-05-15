@@ -24,7 +24,9 @@ jobs:
         run: dotnet restore src/LostWorldTracker.sln
 
       - name: Publish application
-        run: dotnet publish src/LostWorldTracker/LostWorldTracker.csproj -c Release -o out
+        run: |
+          dotnet publish src/LostWorldTracker/LostWorldTracker.csproj -c Release -o out
+          Copy-Item -Path 'docs\*' -Destination 'out' -Recurse -Force
 
       - name: ZIP outputs
         run: Compress-Archive -Path out\* -DestinationPath LostWorldTracker.zip
