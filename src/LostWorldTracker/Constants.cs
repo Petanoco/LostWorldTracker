@@ -22,7 +22,7 @@ internal static class Constants
     internal static class Path
     {
         public const string AppConfigFile = "application.json";
-        public const string CookieFile = "cookies.json";
+        public const string CookieFile = "cookies";
         public const string WebView2UserData = "WebView2Data";
         public const string OutputJson = "output.json";
         public const string OutputCsv = "output.csv";
