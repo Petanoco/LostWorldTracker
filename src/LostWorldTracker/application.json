@@ -1,5 +1,5 @@
 ﻿{
   "api_inter_request_delay": 1000,
   "output_format": "json",
-  "private_world_only": true
+  "private_world_only": false
 }
