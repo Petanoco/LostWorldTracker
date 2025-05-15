@@ -10,6 +10,7 @@
     <PublishSingleFile>true</PublishSingleFile>
     <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
     <DebugType>None</DebugType>
+    <SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,3 +35,4 @@
   </ItemGroup>
 
 </Project>
+
