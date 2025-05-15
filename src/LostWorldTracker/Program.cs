@@ -229,21 +229,21 @@ internal class Program
         var cookieFile = Path.Combine(AppContext.BaseDirectory, Constants.Path.CookieFile);
         if (!System.IO.File.Exists(cookieFile)) return false;
 
-            byte[] raw = System.IO.File.ReadAllBytes(cookieFile);
+        byte[] raw = System.IO.File.ReadAllBytes(cookieFile);
 
-            string json = useDpapi
-                ? Encoding.UTF8.GetString(ProtectedData.Unprotect(raw, null, DataProtectionScope.CurrentUser))
-                : Encoding.UTF8.GetString(raw);
+        string json = useDpapi
+            ? Encoding.UTF8.GetString(ProtectedData.Unprotect(raw, null, DataProtectionScope.CurrentUser))
+            : Encoding.UTF8.GetString(raw);
 
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            if (dict is null || dict.Count == 0) return false;
+        var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+        if (dict is null || dict.Count == 0) return false;
 
-            string header = string.Join("; ", dict.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+        string header = string.Join("; ", dict.Select(kvp => $"{kvp.Key}={kvp.Value}"));
 
-            clientConfig.DefaultHeaders["Cookie"] = header;
-            Console.WriteLine($"Cookies loaded");
-            return true;
-        }
+        clientConfig.DefaultHeaders["Cookie"] = header;
+        Console.WriteLine($"Cookies loaded");
+        return true;
+    }
     public static void SaveCookies(IDictionary<string, string> cookies, bool useDpapi = true)
     {
         var cookieFile = Path.Combine(AppContext.BaseDirectory, Constants.Path.CookieFile);
@@ -300,27 +300,16 @@ internal class Program
                 // ログイン後ページに遷移したら閉じる
                 if (webView.Source.AbsoluteUri == Constants.Path.VrcHomePage)
                 {
-                    window.Close();
-                }
-            };
-
-            // UIスレッド終了中にCookieを取得できないため、一旦キャンセルしてからCookieを取得、その後閉じ直す
-            bool isCookieLoading = true;
-            window.Closing += (_, e) =>
-            {
-                if (isCookieLoading)
-                {
-                    e.Cancel = true;
                     SynchronizationContext.Current!.Post(async _ =>
                     {
-                        Console.WriteLine(webView.CoreWebView2.Environment.BrowserVersionString);
-                        await webView.EnsureCoreWebView2Async();
-                        var cookies = (await webView.CoreWebView2.CookieManager.GetCookiesAsync(Constants.Path.VrcDomain).ConfigureAwait(true)).ToDictionary(c => c.Name, c => c.Value);
-                        var hasAuth = cookies.ContainsKey(Constants.CookieKey.Auth);
-                        tcs.TrySetResult((hasAuth, cookies));
+                        await webView.EnsureCoreWebView2Async().ConfigureAwait(true);
+                        var list = await webView.CoreWebView2.CookieManager
+                                        .GetCookiesAsync(Constants.Path.VrcDomain).ConfigureAwait(true);
+                        var dict = list.ToDictionary(c => c.Name, c => c.Value);
+                        tcs.TrySetResult((dict.ContainsKey(Constants.CookieKey.Auth), dict));
+                        wpfApp.Shutdown();
+                        window.Close();
                     }, null);
-                    window.Dispatcher.BeginInvoke(window.Close);
-                    isCookieLoading = false;
                 }
             };
 
