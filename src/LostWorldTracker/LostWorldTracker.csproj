@@ -15,12 +15,12 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44"/>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
     <PackageReference Include="System.Text.Json" Version="9.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\vrchatapi-csharp\src\VRChat.API\VRChat.API.csproj" />
+    <ProjectReference Include="..\external\vrchatapi-csharp\src\VRChat.API\VRChat.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

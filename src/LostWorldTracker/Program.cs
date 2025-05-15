@@ -125,14 +125,15 @@ internal class Program
                 var jsonOutput = JsonConvert.SerializeObject(outdata, formatting: Formatting.Indented);
                 Console.WriteLine(jsonOutput);
                 System.IO.File.WriteAllText(Constants.Path.OutputJson, jsonOutput);
+                Console.WriteLine($"結果が`{Constants.Path.OutputJson}`に出力されました");
                 break;
             case "csv":
                 using (var write = new StreamWriter(Constants.Path.OutputCsv))
                 using (var csv = new CsvWriter(write, System.Globalization.CultureInfo.InvariantCulture))
                 {
-                    Console.WriteLine("Writing CSV file...");
                     csv.WriteRecords(outdata);
                 }
+                Console.WriteLine($"結果が`{Constants.Path.OutputCsv}`に出力されました");
                 break;
             default:
                 throw new ArgumentException($"In appsettings.json, value {_appConfig[Constants.Config.OutputFormat]} is invalid.", Constants.Config.OutputFormat);
@@ -297,25 +298,22 @@ internal class Program
                 Height = 800,
                 Content = webView
             };
+
             webView.SourceChanged += (_, _) =>
             {
-                Console.WriteLine($"  Initialized: {webView.Source}");
+                // ログイン後ページに遷移したら閉じる
                 if (webView.Source.AbsoluteUri == Constants.Path.VrcHomePage)
                 {
                     window.Close();
                 }
             };
 
-            bool isClosing = false;
+            // UIスレッド終了中にCookieを取得できないため、一旦キャンセルしてからCookieを取得、その後閉じ直す
+            bool isCookieLoading = true;
             window.Closing += (_, e) =>
             {
-                if (isClosing)
+                if (isCookieLoading)
                 {
-                    Console.WriteLine("Closing");
-                }
-                else
-                {
-                    isClosing = true;
                     e.Cancel = true;
                     SynchronizationContext.Current!.Post(async _ =>
                     {
@@ -326,6 +324,7 @@ internal class Program
                         tcs.TrySetResult((hasAuth, cookies));
                     }, null);
                     window.Dispatcher.BeginInvoke(window.Close);
+                    isCookieLoading = false;
                 }
             };
 

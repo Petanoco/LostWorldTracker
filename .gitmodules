@@ -1,0 +1,3 @@
+[submodule "src/external/vrchatapi-csharp"]
+	path = src/external/vrchatapi-csharp
+	url = https://github.com/Petanoco/vrchatapi-csharp.git
