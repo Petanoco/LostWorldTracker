@@ -152,7 +152,7 @@ internal class Program
     static void Main(string[] args)
     {
 
-        if (args.Length==0 || args[0] == Constants.Mode.Normal.ToString("d"))
+        if (args.Length == 0 || args[0] == Constants.Mode.Normal.ToString("d"))
         {
             ApiClient client = new ApiClient();
             var clientConfig = new ClientConfiguration()
@@ -207,7 +207,7 @@ internal class Program
 
             ProcessWithApi(client, clientConfig);
         }
-        else if(args[0] == Constants.Mode.Logout.ToString("d"))
+        else if (args[0] == Constants.Mode.Logout.ToString("d"))
         {
             ApiClient client = new ApiClient();
             var clientConfig = new ClientConfiguration()
@@ -219,14 +219,16 @@ internal class Program
                 Logout(client, clientConfig);
             }
         }
+
+        Console.WriteLine("\nPress any key to continue . . .");
+        Console.ReadKey(true);
     }
 
     public static bool LoadCookies(ClientConfiguration clientConfig, bool useDpapi = true)
     {
         var cookieFile = Path.Combine(AppContext.BaseDirectory, Constants.Path.CookieFile);
         if (!System.IO.File.Exists(cookieFile)) return false;
-        try
-        {
+
             byte[] raw = System.IO.File.ReadAllBytes(cookieFile);
 
             string json = useDpapi
@@ -242,12 +244,6 @@ internal class Program
             Console.WriteLine($"Cookies loaded");
             return true;
         }
-        catch (JsonException ex)
-        {
-            Console.Error.WriteLine($"Invalid cookie JSON: {ex.Message}");
-            return false;
-        }
-    }
     public static void SaveCookies(IDictionary<string, string> cookies, bool useDpapi = true)
     {
         var cookieFile = Path.Combine(AppContext.BaseDirectory, Constants.Path.CookieFile);
