@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*'    # v1.0.0 のようなタグで実行
+      - 'v*'  # 例: v1.0.0
 
 jobs:
   build:
@@ -23,12 +23,15 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore src/LostWorldTracker.sln
 
-      - name: Publish (uses csproj settings)
+      - name: Publish application
         run: dotnet publish src/LostWorldTracker/LostWorldTracker.csproj -c Release -o out
 
-      - name: Create GitHub Release and upload
+      - name: ZIP outputs
+        run: Compress-Archive -Path out\* -DestinationPath LostWorldTracker.zip
+
+      - name: Release ZIP
         uses: softprops/action-gh-release@v2
         with:
-          files: out/LostWorldTracker.exe
+          files: LostWorldTracker.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
