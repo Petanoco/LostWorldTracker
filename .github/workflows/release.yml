@@ -21,10 +21,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore LostWorldTracker.sln
+        run: dotnet restore src/LostWorldTracker.sln
 
       - name: Publish (uses csproj settings)
-        run: dotnet publish LostWorldTracker/LostWorldTracker.csproj -c Release -o out
+        run: dotnet publish src/LostWorldTracker/LostWorldTracker.csproj -c Release -o out
 
       - name: Create GitHub Release and upload
         uses: softprops/action-gh-release@v2
